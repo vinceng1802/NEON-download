@@ -2,18 +2,17 @@
 # DATE: 10 Nov 2018
 # DESC: Code to access, download, and reformat data from NEON (specifically bird, small mammals, and beetle data)
 
-
-#TABLE OF CONTENTS  ( TO BE FINISHED LATER)
-#SET UP WORKING ENVIRONMENT       Line 15
-#Set Working Dierctory            Line 19
+#TABLE OF CONTENTS
+#SET UP WORKING ENVIRONMENT       Line 17
+  #Set Working Dierctory            Line 21
 #Install Packages                 Line 28
-#DOWNLOAD DATA FROM NEON          Line 49
-#BIRD DATA                        Line 53
-#MAMMAL DATA                      Line 77
-#BEETLE DATA                      Line 94
-#IMPORT DATA                      Line 111
-#BIRD DATA                        Line 118
-#MAMMAL DATA                      Line 130
+#DOWNLOAD DATA FROM NEON          Line 50
+  #BIRD DATA                        Line 54
+  #MAMMAL DATA                      Line 79
+#IMPORT DATA                      Line 95
+  #BIRD DATA                        Line 99
+  #MAMMAL DATA                      Line 111
+#DATA EXPLORATION                 Line 120
 
 #########
 ## PART - SET UP WORKING ENVIRONMENT
@@ -93,23 +92,6 @@ library(rhdf5)
 # stackByTable(dirPasteM, folder = T)
 # #This script to stack Mammal data was run on 27 Nov 2018
 
-##
-#### BEETLES
-##
-# 
-# dirPasteB <- paste(dir,'/Data/Beetles', sep = "")
-# zipsByProduct(dpID = "DP1.10022.001",   #DPI
-#               site = 'all', #dont change
-#               package = 'basic', #dont change
-#               check.size = T, #dont change
-#               savepath = dirPasteB)
-# This script to download Beetles data was run on 27 Nov 2018
-
-# dirPasteM <- paste(dir,'/Data/Beetles/filesToStack10022', sep = "") #refers to the DPI
-# stackByTable(dirPasteM, folder = T)
-# #This script to stack Beetles data was run on 27 Nov 2018
-
-
 #########
 ## PART - IMPORT DATA 
 #########
@@ -132,12 +114,6 @@ birdPoint <- read.delim(paste(dir, "/Data/Birds/filesToStack10003/stackedFiles/b
 
 mamPlot <- read.delim(paste(dir, "/Data/Mammals/filesToStack10072/stackedFiles/mam_perplotnight.csv", sep = ""), sep = ",")
 mamTrap <- read.delim(paste(dir, "/Data/Mammals/filesToStack10072/stackedFiles/mam_pertrapnight.csv", sep = ""), sep = ",")
-
-##
-#### BEETLES
-##
-
-# #Not currently looking at beetle data right now
 
 
 #########
