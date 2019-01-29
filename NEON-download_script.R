@@ -4,7 +4,7 @@
 
 #TABLE OF CONTENTS
   #SET UP WORKING ENVIRONMENT       Line 17
-    #Set Working Dierctory          Line 21
+    #Set Working Directory          Line 21
     #Install Packages               Line 28
   #DOWNLOAD DATA FROM NEON          Line 50
     #Bird Data                      Line 54
