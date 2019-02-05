@@ -7,5 +7,8 @@ Description - A compressed folder containing stacked files of samplings of small
 File: NEON-download_script.R
 Description - Script to download data sets, specifically for landbird and mammal data, from the NEON website and importing the data. Every sampling recorded per site is stacked into easy-to-read Excel sheets.
 
+File: NEON-manip_script.R
+Description - Script to manipulate data sets downloaded from the NEON website via 'NEON-download_script', specifically for landbird and mammal data. 
+
 File: README.md
 Description - Text file containing an overview of all of the files located within the NEON-download package
