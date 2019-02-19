@@ -43,7 +43,10 @@ mamPlot <- read.csv(unz("Mammals.zip", "Mammals/mam_perplotnight.csv"), header =
                           sep = ",") 
 # LOAD TRAP DATA
 mamTrap <- read.csv(unz("Mammals.zip", "Mammals/mam_pertrapnight.csv"), header = TRUE,
-                           sep = ",") 
+                           sep = ",")
+# LOAD FIELD SITES
+fieldSites <- read.csv(unz("field-sites.zip", "field-sites.csv"), header = TRUE,
+                       sep = ",")
 
 #########
 ## PART - DATA EXPLORATION
@@ -58,9 +61,15 @@ mamSampNum <- tapply(newMamPlot$collectDate, newMamPlot$plotID,
                      FUN = function(x)length(unique(x)))
 
 # CALCULATE PLOTS PER SAMPLING SITE FOR BIRDS
-newBirCount <- unique(birCount[,4:8])
-birPlotNum <- tapply(newBirCount$plotID, newBirCount$siteID, 
+newBirPlot <- unique(birPlot[,4:15])
+birPlotNum <- tapply(newBirPlot$plotID, newBirPlot$siteID, 
                          FUN = function(x)length(unique(x)))
 # CALCULATE SAMPLING OCCASIONS PER PLOT FOR BIRDS
-birSampNum <- tapply(newBirCount$startDate, newBirCount$plotID, 
+birSampNum <- tapply(newBirPlot$startDate, newBirPlot$plotID, 
                      FUN = function(x)length(unique(x)))
+
+# CHECK WHICH SITES HAVE MAMMAL/BIRD DATA
+newFieldSites <- unique(fieldSites[,1:5])
+mergedSites <- merge(x = newFieldSites, y = newMamPlot, 
+                     by.x = "Site.ID", by.y = "siteID", all = TRUE)
+unique(mergedSites[,1:3])
