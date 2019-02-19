@@ -70,6 +70,31 @@ birSampNum <- tapply(newBirPlot$startDate, newBirPlot$plotID,
 
 # CHECK WHICH SITES HAVE MAMMAL/BIRD DATA
 newFieldSites <- unique(fieldSites[,1:5])
-mergedSites <- merge(x = newFieldSites, y = newMamPlot, 
-                     by.x = "Site.ID", by.y = "siteID", all = TRUE)
-unique(mergedSites[,1:3])
+mergedMam <- merge(x = newFieldSites, y = data.frame(siteID = unique(newMamPlot$siteID)), 
+                     by.x = "Site.ID", by.y = "siteID", all = F)
+mergedMam$Mam <- 1
+mergedBir <- merge(x = newFieldSites, y = data.frame(siteID = unique(newBirPlot$siteID)),
+                   by.x = "Site.ID", by.y = "siteID", all = F)
+mergedBir$Bir <- 1
+mergedALL <- merge(x = mergedBir, y = mergedMam,
+                   by="Site.ID", all = T)
+mergedALL <- mergedALL[,c('Site.ID', 'Bir','Mam')]
+mergedALL <- merge(newFieldSites,mergedALL,by='Site.ID',all=T)
+
+mergedALL[is.na(mergedALL)] <- 0
+nrow(mergedALL[mergedALL$Bir == 1,])
+nrow(mergedALL[mergedALL$Mam == 1,])
+
+nrow(mergedALL[mergedALL$Bir == 1 & mergedALL$Mam == 1,])
+nrow(mergedALL[mergedALL$Bir == 0 & mergedALL$Mam == 0,])
+
+nrow(mergedALL[mergedALL$Bir == 1 & mergedALL$Mam == 0,])
+nrow(mergedALL[mergedALL$Bir == 0 & mergedALL$Mam == 1,])
+
+##
+#### BART BIRD DATA EXPLORATION
+##
+
+#Subsetting columns of interest fo Vince
+bartBird <- birCount[birCount$siteID == 'BART', c('siteID','plotID','pointID','startDate','pointCountMinute','taxonID','clusterSize')]
+nrow(bartBird)
