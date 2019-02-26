@@ -95,6 +95,37 @@ nrow(mergedALL[mergedALL$Bir == 0 & mergedALL$Mam == 1,])
 #### BART BIRD DATA EXPLORATION
 ##
 
-#Subsetting columns of interest fo Vince
+#Subsetting columns of interest for Vince
 bartBird <- birCount[birCount$siteID == 'BART', c('siteID','plotID','pointID','startDate','pointCountMinute','taxonID','clusterSize')]
 nrow(bartBird)
+
+#Reformat columns
+bartBird$taxonID <- factor(bartBird$taxonID)
+
+##
+#### MANAGE DATA 
+##
+
+#bartBird
+#Manipulating time and date data 
+#Specifying the format of time and date data
+bartBird$startDate <- as.POSIXct(bartBird$startDate,
+                                  format="%Y-%m-%d T %H Z",
+                                  tz = 'GMT' #ALL NEON DATA IS IN THE SAME TIME ZONE, Greenwich Mean Time (GMT=UTC)
+)
+
+bartBird$year <- year(bartBird$startDate)
+bartBird$month <- month(bartBird$startDate)
+bartBird$day <- day(bartBird$startDate)
+
+#Determining number of sampling occasions
+nSamp <- unique(bartBird[,c('siteID','plotID','pointID','pointCountMinute','taxonID','clusterSize')])
+nrow(nSamp)
+
+#Determining number of species found at BART
+length(unique(bartBird$taxonID))
+#Determining birds found per species
+bartBirdSum <- tapply(bartBird$clusterSize, INDEX = list(bartBird$taxonID, bartBird$year), FUN = function(x) sum(x))
+
+#Change NAs to 0
+#Export data as a table
