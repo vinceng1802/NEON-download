@@ -19,6 +19,12 @@ setwd(dir)
 #### INSTALL PACKAGES
 ##
 
+#install.packages("lubridate")
+#install.packages("writexl")
+
+library(lubridate)
+library(writexl)
+
 ##
 #### IMPORTING DATA
 ##
@@ -125,7 +131,9 @@ nrow(nSamp)
 #Determining number of species found at BART
 length(unique(bartBird$taxonID))
 #Determining birds found per species
-bartBirdSum <- tapply(bartBird$clusterSize, INDEX = list(bartBird$taxonID, bartBird$year), FUN = function(x) sum(x))
+bartBirdSum <- tapply(bartBird$clusterSize, INDEX = list(bartBird$year, bartBird$taxonID), FUN = function(x) sum(x))
 
 #Change NAs to 0
+bartBird$clusterSize[is.na(bartBird$clusterSize)] <- 0
 #Export data as a table
+write_xlsx(x = bartBird, path = "bartBird.xlsx")
