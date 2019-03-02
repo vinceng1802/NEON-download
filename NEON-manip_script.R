@@ -135,5 +135,6 @@ bartBirdSum <- tapply(bartBird$clusterSize, INDEX = list(bartBird$year, bartBird
 
 #Change NAs to 0
 bartBird$clusterSize[is.na(bartBird$clusterSize)] <- 0
+bartBirdSum[is.na(bartBirdSum)] <- 0
 #Export data as a table
-write_xlsx(x = bartBird, path = "bartBird.xlsx")
+#write_xlsx(x = bartBird, path = "bartBird.xlsx")
