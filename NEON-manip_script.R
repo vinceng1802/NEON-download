@@ -12,7 +12,7 @@
 #### SET WORKING DIRECTORY 
 ##
 
-dir <- getwd()
+dir <- "C:/Users/Vince/Desktop/Zipkin Lab/NEON/NEON-download"
 setwd(dir)
 
 ##
@@ -43,13 +43,14 @@ birPlot <- read.csv(unz("Birds.zip", "Birds/brd_perpoint.csv"), header = TRUE,
 
 
 # MAMMAL DATA 
-mammals <- as.character(unzip("Mammals.zip", list = TRUE)$Name)
+mammals <- as.character(unzip("Mammals2018.zip", list = TRUE)$Name)
 # LOAD PLOT DATA
-mamPlot <- read.csv(unz("Mammals.zip", "Mammals/mam_perplotnight.csv"), header = TRUE,
+mamPlot <- read.csv(unz("Mammals2018.zip", "Mammals2018/mam_perplotnight.csv"), header = TRUE,
                           sep = ",") 
 # LOAD TRAP DATA
-mamTrap <- read.csv(unz("Mammals.zip", "Mammals/mam_pertrapnight.csv"), header = TRUE,
+mamTrap <- read.csv(unz("Mammals2018.zip", "Mammals2018/mam_pertrapnight.csv"), header = TRUE,
                            sep = ",")
+
 # LOAD FIELD SITES
 fieldSites <- read.csv(unz("field-sites.zip", "field-sites.csv"), header = TRUE,
                        sep = ",")
@@ -138,3 +139,27 @@ bartBird$clusterSize[is.na(bartBird$clusterSize)] <- 0
 bartBirdSum[is.na(bartBirdSum)] <- 0
 #Export data as a table
 #write_xlsx(x = bartBird, path = "bartBird.xlsx")
+
+##
+#### SRER MAMMAL DATA EXPLORATION
+##
+
+#Subsetting columns of interest for Vince
+srerMam <- mamTrap %>% filter(siteID == 'SRER') %>% select(siteID, plotID, trapCoordinate, collectDate, tagID, taxonID, scientificName)
+  #mamTrap[mamTrap$siteID == 'SRER', c('siteID','plotID','pointID','collectDate','pointCountMinute','taxonID','clusterSize')]
+nrow(srerMam)
+sppSRER <- srerMam %>% distinct(scientificName) %>% filter(!str_detect(scientificName, 'sp.'))
+srerMam <- srerMam %>% filter(!str_detect(scientificName, 'sp.'), .preserve = TRUE) 
+
+#Determining mammals found per species
+srerMamSum <- srerMam %>% filter(str_detect(tagID, 'NEON'), .preserve = TRUE) 
+#srerMamSum$Count <- 1
+#srerMamSum <- tapply(srerMamSum$Count, INDEX = list(srerMamSum$scientificName,srerMamSum$tagID), FUN = function(x) sum(x))
+
+x <- data.frame(Spp = sppSRER$scientificName, Count = NA)
+for(i in 1:nrow(sppSRER)){
+  y <- srerMamSum %>% filter(scientificName == sppSRER$scientificName[i]) %>% distinct(tagID)
+  x[i,2] <- nrow(y)
+}
+#Reformat columns
+bartBird$taxonID <- factor(bartBird$taxonID)
