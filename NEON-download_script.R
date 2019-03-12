@@ -60,7 +60,7 @@ options(stringsAsFactors = F)
 # download observational data with zipsByProduct() from the data portal remotely
 #Only have to do this step once (the first time you work the data)
   #Birds (Need to create folder - see dirPaste() before running code)
-dirPaste <- paste(dir,'/Data/Birds', sep = "")
+dirPaste <- paste(dir,'/Birds', sep = "")
   # dpID and savepath ae the only things that need to change
 zipsByProduct(dpID = "DP1.10003.001",   #DPI for Bird Point Count data, you get that from the Data Portal in-dev browser
               site = 'all', #dont change
@@ -80,15 +80,17 @@ stackByTable(dirPaste, folder = T)
 #### MAMMALS
 ##
 
-dirPasteM <- paste(dir,'/Data/Mammals', sep = "")
+# Download data from portal via R
+options(stringsAsFactors = F)
+dirPasteM <- paste(dir,'/Mammals2018', sep = "")
 zipsByProduct(dpID = "DP1.10072.001",   #DPI
               site = 'all', #dont change
               package = 'basic', #dont change
               check.size = T, #dont change
               savepath = dirPasteM)
-#This script to dowlnload Mamma data was run on 'Day' 'Month' 'Year'
+#This script to download Mammal data was run on 'Day' 'Month' 'Year'
 
-dirPasteM <- paste(dir,'/Data/Mammals/filesToStack10072', sep = "") #refers to the DPI
+dirPasteM <- paste(dir,'/Mammals2018/filesToStack10072', sep = "") #refers to the DPI
 stackByTable(dirPasteM, folder = T)
 #This script to stack Mammal data was run on 'Day' 'Month' 'Year'
 
@@ -103,17 +105,17 @@ stackByTable(dirPasteM, folder = T)
 # Read in Bird Data
 
 #Count Data
-birdCount <- read.delim(paste(dir, "/Data/Birds/filesToStack10003/stackedFiles/brd_countdata.csv", sep = ""), sep = ",")
+birdCount <- read.delim(paste(dir, "/Birds/filesToStack10003/stackedFiles/brd_countdata.csv", sep = ""), sep = ",")
 #Repeat for points data
-birdPoint <- read.delim(paste(dir, "/Data/Birds/filesToStack10003/stackedFiles/brd_perpoint.csv", sep = ""), sep = ",")
+birdPoint <- read.delim(paste(dir, "/Birds/filesToStack10003/stackedFiles/brd_perpoint.csv", sep = ""), sep = ",")
 
 
 ##
 #### MAMMALS
 ##
 
-mamPlot <- read.delim(paste(dir, "/Data/Mammals/filesToStack10072/stackedFiles/mam_perplotnight.csv", sep = ""), sep = ",")
-mamTrap <- read.delim(paste(dir, "/Data/Mammals/filesToStack10072/stackedFiles/mam_pertrapnight.csv", sep = ""), sep = ",")
+mamPlot <- read.delim(paste(dir, "/Mammals2018/filesToStack10072/stackedFiles/mam_perplotnight.csv", sep = ""), sep = ",")
+mamTrap <- read.delim(paste(dir, "/Mammals2018/filesToStack10072/stackedFiles/mam_pertrapnight.csv", sep = ""), sep = ",")
 
 
 #########
