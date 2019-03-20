@@ -187,7 +187,12 @@ for(i in 1:nrow(sppJORN)){
 
 # CHECK WHICH SITES HAVE UNIQUE SPECIES
 mergedSpec <- merge(x = xSRER, y = xJORN, by = "Spp", all = T)
+names(mergedSpec) <- c("Spp", "SRER", "JORN")
+
+mergedSpec <- mergedSpec %>% filter(!(SRER == 0 & JORN ==0))
 
 mergedSpec[is.na(mergedSpec)] <- 0
+nrow(mergedSpec[mergedSpec$SRER > 0 & mergedSpec$JORN == 0])
 
-nrow(mergedSpec[mergedSpec$Count.x > 0 & mergedSpec$Count.y == 0,])
+#Export data as a table
+write_xlsx(x = mergedSpec, path = "MamSrerJorn.xlsx")
