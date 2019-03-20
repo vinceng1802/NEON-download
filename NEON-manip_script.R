@@ -21,9 +21,11 @@ setwd(dir)
 
 #install.packages("lubridate")
 #install.packages("writexl")
+#install.packages("tidyverse")
 
 library(lubridate)
 library(writexl)
+library(tidyverse)
 
 ##
 #### IMPORTING DATA
@@ -40,7 +42,6 @@ birCount <- read.csv(unz("Birds.zip", "Birds/brd_countdata.csv"), header = TRUE,
 # LOAD PER PLOT DATA
 birPlot <- read.csv(unz("Birds.zip", "Birds/brd_perpoint.csv"), header = TRUE,
                  sep = ",") 
-
 
 # MAMMAL DATA 
 mammals <- as.character(unzip("Mammals2018.zip", list = TRUE)$Name)
@@ -156,10 +157,37 @@ srerMamSum <- srerMam %>% filter(str_detect(tagID, 'NEON'), .preserve = TRUE)
 #srerMamSum$Count <- 1
 #srerMamSum <- tapply(srerMamSum$Count, INDEX = list(srerMamSum$scientificName,srerMamSum$tagID), FUN = function(x) sum(x))
 
-x <- data.frame(Spp = sppSRER$scientificName, Count = NA)
+xSRER <- data.frame(Spp = sppSRER$scientificName, Count = NA)
 for(i in 1:nrow(sppSRER)){
-  y <- srerMamSum %>% filter(scientificName == sppSRER$scientificName[i]) %>% distinct(tagID)
-  x[i,2] <- nrow(y)
+  ySRER <- srerMamSum %>% filter(scientificName == sppSRER$scientificName[i]) %>% distinct(tagID)
+  xSRER[i,2] <- nrow(ySRER)
 }
-#Reformat columns
-bartBird$taxonID <- factor(bartBird$taxonID)
+
+##
+#### JORN MAMMAL DATA EXPLORATION
+##
+
+#Subsetting columns of interest for Vince
+jornMam <- mamTrap %>% filter(siteID == 'JORN') %>% select(siteID, plotID, trapCoordinate, collectDate, tagID, taxonID, scientificName)
+#mamTrap[mamTrap$siteID == 'SRER', c('siteID','plotID','pointID','collectDate','pointCountMinute','taxonID','clusterSize')]
+nrow(jornMam)
+sppJORN <- jornMam %>% distinct(scientificName) %>% filter(!str_detect(scientificName, 'sp.'))
+jornMam <- jornMam %>% filter(!str_detect(scientificName, 'sp.'), .preserve = TRUE) 
+
+#Determining mammals found per species
+jornMamSum <- jornMam %>% filter(str_detect(tagID, 'NEON'), .preserve = TRUE) 
+#srerMamSum$Count <- 1
+#srerMamSum <- tapply(srerMamSum$Count, INDEX = list(srerMamSum$scientificName,srerMamSum$tagID), FUN = function(x) sum(x))
+
+xJORN <- data.frame(Spp = sppJORN$scientificName, Count = NA)
+for(i in 1:nrow(sppJORN)){
+  yJORN <- jornMamSum %>% filter(scientificName == sppJORN$scientificName[i]) %>% distinct(tagID)
+  xJORN[i,2] <- nrow(yJORN)
+}
+
+# CHECK WHICH SITES HAVE UNIQUE SPECIES
+mergedSpec <- merge(x = xSRER, y = xJORN, by = "Spp", all = T)
+
+mergedSpec[is.na(mergedSpec)] <- 0
+
+nrow(mergedSpec[mergedSpec$Count.x > 0 & mergedSpec$Count.y == 0,])
