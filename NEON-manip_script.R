@@ -152,6 +152,10 @@ nrow(srerMam)
 sppSRER <- srerMam %>% distinct(scientificName) %>% filter(!str_detect(scientificName, 'sp.'))
 srerMam <- srerMam %>% filter(!str_detect(scientificName, 'sp.'), .preserve = TRUE) 
 
+#Add years from 'collectDate' column
+srerMam <- srerMam %>% mutate(YEAR = year(collectDate))
+min(srerMam$YEAR)
+
 #Determining mammals found per species
 srerMamSum <- srerMam %>% filter(str_detect(tagID, 'NEON'), .preserve = TRUE) 
 #srerMamSum$Count <- 1
@@ -174,6 +178,10 @@ nrow(jornMam)
 sppJORN <- jornMam %>% distinct(scientificName) %>% filter(!str_detect(scientificName, 'sp.'))
 jornMam <- jornMam %>% filter(!str_detect(scientificName, 'sp.'), .preserve = TRUE) 
 
+#Add years from 'collectDate' column
+jornMam <- jornMam %>% mutate(YEAR = year(collectDate))
+min(jornMam$YEAR)
+
 #Determining mammals found per species
 jornMamSum <- jornMam %>% filter(str_detect(tagID, 'NEON'), .preserve = TRUE) 
 #srerMamSum$Count <- 1
@@ -190,9 +198,11 @@ mergedSpec <- merge(x = xSRER, y = xJORN, by = "Spp", all = T)
 names(mergedSpec) <- c("Spp", "SRER", "JORN")
 
 mergedSpec <- mergedSpec %>% filter(!(SRER == 0 & JORN ==0))
-
-mergedSpec[is.na(mergedSpec)] <- 0
 nrow(mergedSpec[mergedSpec$SRER > 0 & mergedSpec$JORN == 0])
 
+# SUM OF ALL INDIVIDUALS PER SITE
+sum(mergedSpec["SRER"])
+sum(mergedSpec["JORN"])
+
 #Export data as a table
-write_xlsx(x = mergedSpec, path = "MamSrerJorn.xlsx")
+#write_xlsx(x = mergedSpec, path = "MamSrerJorn.xlsx")
