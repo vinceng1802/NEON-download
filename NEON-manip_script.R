@@ -26,6 +26,7 @@ setwd(dir)
 library(lubridate)
 library(writexl)
 library(tidyverse)
+library(ggplot2)
 
 ##
 #### IMPORTING DATA
@@ -104,11 +105,25 @@ nrow(mergedALL[mergedALL$Bir == 0 & mergedALL$Mam == 1,])
 ##
 
 #Subsetting columns of interest for Vince
-bartBird <- birCount[birCount$siteID == 'BART', c('siteID','plotID','pointID','startDate','pointCountMinute','taxonID','clusterSize')]
-nrow(bartBird)
+bartBird <- birCount[birCount$siteID == 'BART', c('siteID','plotID','pointID','startDate','pointCountMinute','vernacularName','clusterSize')]
+target <- c('Black-throated Green Warbler',
+            'Black-throated Blue Warbler',
+            'Ovenbird',
+            'Red-eyed Vireo',
+            'Blackburnian Warbler',
+            'Myrtle Warbler',
+            'Blue-headed Vireo',
+            'Magnolia Warbler',
+            'American Redstart',
+            'Blackpoll Warbler',
+            'Canada Warbler',
+            'Black-and-white Warbler',
+            'Nashville Warbler')
+bartBird <- bartBird %>% filter(vernacularName %in% target)
 
-#Reformat columns
-bartBird$taxonID <- factor(bartBird$taxonID)
+# levels(bartBird$vernacularName) <- c(levels(bartBird$vernacularName), 
+#                                      'Myrtle Warbler', 'Nashville Warbler', 'Blackpoll Warbler')
+# bartBird$vernacularName
 
 ##
 #### MANAGE DATA 
@@ -126,20 +141,33 @@ bartBird$year <- year(bartBird$startDate)
 bartBird$month <- month(bartBird$startDate)
 bartBird$day <- day(bartBird$startDate)
 
-#Determining number of sampling occasions
-nSamp <- unique(bartBird[,c('siteID','plotID','pointID','pointCountMinute','taxonID','clusterSize')])
-nrow(nSamp)
+## Add dummy rows of missing species
+bartBird <- bartBird %>% select(siteID, plotID, pointID, vernacularName, clusterSize, year, month, day) 
+missSpp <- data.frame(siteID = rep('BART',3), plotID=rep('BART_025'), pointID=rep("C1",3), 
+                      vernacularName=c('Myrtle Warbler', 'Nashville Warbler', 'Blackpoll Warbler'), 
+                      clusterSize = rep(0, 3), year=rep(2015, 3), month=rep(6, 3), day=rep(14,3))
 
-#Determining number of species found at BART
-length(unique(bartBird$taxonID))
+bartBird <- rbind(bartBird,missSpp)
+
+
+#Reset Factor levels
+bartBird$vernacularName <- droplevels(bartBird$vernacularName)
 #Determining birds found per species
-bartBirdSum <- tapply(bartBird$clusterSize, INDEX = list(bartBird$year, bartBird$taxonID), FUN = function(x) sum(x))
+bartBirdSum <- aggregate(bartBird$clusterSize, by = list(bartBird$vernacularName), FUN = function(x) sum(x))
+colnames(bartBirdSum) <- c("Species", "Count")
 
 #Change NAs to 0
 bartBird$clusterSize[is.na(bartBird$clusterSize)] <- 0
 bartBirdSum[is.na(bartBirdSum)] <- 0
 #Export data as a table
 #write_xlsx(x = bartBird, path = "bartBird.xlsx")
+
+#Select species of interest
+ggplot(data= bartBirdSum, aes(x=Species, y=Count, fill=Species)) + 
+  geom_bar(stat="identity") +
+  theme(axis.text.x=element_blank(),
+          axis.ticks.x=element_blank())
+
 
 ##
 #### SRER MAMMAL DATA EXPLORATION
